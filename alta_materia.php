@@ -1,27 +1,21 @@
 <?php
-//conectar a la bd
-$conexion = new mysqli("localhost","root","","diciembre");
+include_once('conexion.php');
 
-//recibimos datos del formulario html
-$materia = $_POST["materia"];
+// Preparar la consulta SQL utilizando sentencias preparadas para prevenir la inyección SQL
+$stmt = $conexion->prepare("INSERT INTO materia (nombre) VALUES (?)");
+$stmt->bind_param("s", $materia);
 
-//generamos la consulta para dar de alta en la bd
-$alta = "INSERT INTO materia(nombre) VALUE('$materia')";
+// Ejecutar la consulta
+$stmt->execute();
 
-//ejecutamos la consulta
-$conexion->query($alta);
-//VERIFICAMOS EL ALTA
-if ($conexion) {
-    echo "Se ha dado de alta la materia ". $materia;
-    } else {
-        echo "No se ha dado de alta";
-    }
+// Verificar el resultado
+if ($stmt->affected_rows > 0) {
+    echo "Se ha dado de alta con éxito: " . $materia;
+} else {
+    echo "No se ha podido dar de alta.";
+}
 
-
-
-
-
-
-
-
+// Cerrar la sentencia y la conexión
+$stmt->close();
+$conexion->close();
 ?>
